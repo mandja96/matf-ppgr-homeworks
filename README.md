@@ -9,7 +9,7 @@ I have implemented three algorithms for perspective mappings with a GUI for impo
 
 
 ### Requirements and running
-Software: python3
+Software: python3  
 Libraries: pyqt5, PIL, Pillow
 
 ```sh
