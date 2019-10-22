@@ -1,4 +1,4 @@
-## PPGR_Homework1
+## PPGR_Homework_1
 This repo represents my first homework for the elective course at the Faculty of Mathematics, University of Belgrade, called:
   - Application of Projective Geometry in Computing
 
