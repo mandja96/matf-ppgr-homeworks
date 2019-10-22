@@ -17,8 +17,3 @@ $  pip install -r requirements.txt
 $. python3 main.py
 ```
 
-
-
-Before starting the application, you should run: 
-After that just start the application with: python3 main.py
-
