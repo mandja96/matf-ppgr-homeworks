@@ -22,7 +22,7 @@ There are two options for testing my homework.
   1. running file: ppgr_homework1.py with python3
   2. running file: main.py with python3 where I have implemented GUI
 
-### Explaining GUI
+#### Explaining GUI
   - Insert how many points you want to select on image, lets say N
   - Import random image by clicking File in the Main Menu
   - Mark N points on the original image and N projected points on the black image
