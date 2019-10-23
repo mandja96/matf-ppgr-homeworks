@@ -8,10 +8,15 @@
 
 # ### 1. Naivni algoritam za projekciju tačaka
 
-# In[15]:
-
-
+import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
+import math
+from scipy.spatial import distance
+
+print()
+print()
+
 points = [[-3, -1, 1],
           [3, -1, 1],
           [1, 1, 1],
@@ -77,122 +82,98 @@ def naive(points, points_proj):
     return (P_matrix, lambda1, lambda2, lambda3)
 
 P_matrix, lambda1, lambda2, lambda3 = naive(points, points_proj)
-P_matrix.round()
+print("Matrica naivnog algoritma, zaokruzena na 5 decimala: ")
+print(P_matrix.round(decimals=5))
+print()
 
-
-# ###### -------------   PROVERA NAIVNOG ALGORITMA ---------------
-
-# In[16]:
-
-
+####### -------------   PROVERA NAIVNOG ALGORITMA ---------------
+print("Provera za tacku D: ")
 D = np.array(points[0]) * lambda1 + np.array(points[1]) * lambda2 + np.array(points[2]) * lambda3
-D.round(decimals=4)
+print(D.round(decimals=5))
+print()
+print()
+print()
+
+##### VIZUALIZACIJA NAIVNOG ALGORITMA
+def draw_naive(points, points_proj):
+    x = [i[0] for i in points]
+    y = [i[1] for i in points]
+
+    x.append(points[0][0])
+    y.append(points[0][1])
+
+    fig = plt.subplots(nrows=1, ncols=2, figsize = (15, 8))
+
+    plt.subplot(1, 2, 1)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title("Original points")
+    plt.plot(x, y, 'orange')
+
+    xp = [i[0] for i in points_proj]
+    yp = [i[1] for i in points_proj]
+
+    xp.append(points_proj[0][0])
+    yp.append(points_proj[0][1])
+
+    plt.subplot(1, 2, 2)
+    plt.xlabel('x_proj')
+    plt.ylabel('y_proj')
+    plt.title("Projection points")
+    plt.plot(xp, yp, 'blue')
+
+    plt.tight_layout()
+    plt.show()
 
 
-# #### VIZUALIZACIJA NAIVNOG ALGORITMA
+##### IMPORTOVANJE SLIKE ZA NAIVNI ALGORITAM
+def draw_naive_pic():
+    img = Image.open("box.jpg")
+    img_copy = Image.new('RGB', (img.size[0], img.size[1]), "black")
+    print("Image size: {} x {}".format(img.size[1], img.size[0]))
+            
+    # box.jpg
+    points = [[390, 620, 1],
+            [770, 510, 1],
+            [775, 300, 1],
+            [380, 390, 1]]
 
-# In[17]:
+    points_proj = [[200, 600, 1],
+                [800, 600, 1],
+                [800, 200, 1],
+                [200, 200, 1]]
+                
+    (P, lambda1, lambda2, lambda3) = projection_matrix_P(points, points_proj)
 
+    P_inverse = np.linalg.inv(P)
+    cols = img_copy.size[0]
+    rows = img_copy.size[1]
 
-import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+    for i in range(cols):        
+        for j in range(rows):  
+            
+            new_coordinates = P_inverse.dot([i, j, 1]) # lambda * X' = P * X
+            new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
+            
+            if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and            new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
+                tmp1 = img.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
+                tmp2 = img.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
+                img_copy.putpixel((i, j), tmp2)
+    fig = plt.figure(figsize = (16, 9))
 
-x = [i[0] for i in points]
-y = [i[1] for i in points]
+    plt.subplot(1, 2, 1)
+    plt.imshow(img)
+    plt.title('Input')
 
-x.append(points[0][0])
-y.append(points[0][1])
+    plt.subplot(1, 2, 2)
+    plt.imshow(img_copy)
+    plt.title('Output')
 
-fig = plt.subplots(nrows=1, ncols=2, figsize = (15, 8))
-
-plt.subplot(1, 2, 1)
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title("Original points")
-plt.plot(x, y, 'orange')
-
-xp = [i[0] for i in points_proj]
-yp = [i[1] for i in points_proj]
-
-xp.append(points_proj[0][0])
-yp.append(points_proj[0][1])
-
-plt.subplot(1, 2, 2)
-plt.xlabel('x_proj')
-plt.ylabel('y_proj')
-plt.title("Projection points")
-plt.plot(xp, yp, 'blue')
-
-plt.tight_layout()
-plt.show()
-
-
-# #### IMPORTOVANJE SLIKE ZA NAIVNI ALGORITAM
-
-# In[18]:
-
-
-from PIL import Image
-import matplotlib.pyplot as plt
-import math
-
-img = Image.open("box.jpg")
-img_copy = Image.new('RGB', (img.size[0], img.size[1]), "black")
-print("Image size: {} x {}".format(img.size[1], img.size[0]))
-        
-# box.jpg
-points = [[390, 620, 1],
-          [770, 510, 1],
-          [775, 300, 1],
-          [380, 390, 1]]
-
-points_proj = [[200, 600, 1],
-               [800, 600, 1],
-               [800, 200, 1],
-               [200, 200, 1]]
-               
-(P, lambda1, lambda2, lambda3) = projection_matrix_P(points, points_proj)
-
-P_inverse = np.linalg.inv(P)
-cols = img_copy.size[0]
-rows = img_copy.size[1]
-
-for i in range(cols):        
-    for j in range(rows):  
-        
-        new_coordinates = P_inverse.dot([i, j, 1]) # lambda * X' = P * X
-        new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
-        
-        if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and            new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
-            tmp1 = img.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
-            tmp2 = img.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
-            img_copy.putpixel((i, j), tmp2)
-       
+    plt.tight_layout()
+    plt.show()
 
 
-# ##### Printujem sliku
-
-# In[19]:
-
-
-fig = plt.figure(figsize = (16, 9))
-
-plt.subplot(1, 2, 1)
-plt.imshow(img)
-plt.title('Input')
-
-plt.subplot(1, 2, 2)
-plt.imshow(img_copy)
-plt.title('Output')
-
-plt.tight_layout()
-plt.show()
-
-
-# ### 2. DLT algoritam za projektivno preslikavanje
-
-# In[20]:
-
+#### 2. DLT algoritam za projektivno preslikavanje
 
 points = [[-3, -1, 1],
           [3, -1, 1],
@@ -241,114 +222,73 @@ def dlt_rescale(points, points_proj):
     return P_matrix_DLT_rescaled
 
 P_matrix_DLT = dlt(points, points_proj)
-P_matrix_DLT.reshape((3,3)).round(decimals=6)
+print("Matrica za DLT algoritam: ")
+print(P_matrix_DLT.reshape((3,3)).round(decimals=5))
+print()
 
-
-# ### Provera DLT i Naivnog algoritma
-
-# In[21]:
-
-
+#### Provera DLT i Naivnog algoritma
 P_matrix_DLT_scaled = dlt_rescale(points, points_proj)
 P_matrix_DLT_scaled = np.array(P_matrix_DLT_scaled).reshape((3, 3))
-P_matrix_DLT_scaled.round()
+
+print("Poredjenje vrednosti matrica naivnog i DLT algoritma:")
+print(P_matrix.round() == P_matrix_DLT_scaled.round())
+print()
+print()
+
+def draw_dlt_pic():
+    img = Image.open("box.jpg")
+    img_copy = Image.new('RGB', (img.size[0], img.size[1]), "black")
+    print("Image size: {} x {}".format(img.size[1], img.size[0]))
+            
+    # box.jpg
+    points = [[390, 620, 1],
+            [770, 510, 1],
+            [775, 300, 1],
+            [380, 390, 1]]
+
+    points_proj = [[200, 600, 1],
+                [800, 600, 1],
+                [800, 200, 1],
+                [200, 200, 1]]
+
+    points = [[a/c, b/c, 1] for [a,b,c] in points]
+    points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
+                
+    P_dlt = dlt(points, points_proj)
+    P_rescaled = np.array(P_dlt).reshape((3, 3))
+
+    P_inverse = np.linalg.inv(P_rescaled)
+    cols = img_copy.size[0]
+    rows = img_copy.size[1]
+
+    for i in range(cols):        
+        for j in range(rows):  
+            
+            new_coordinates = P_inverse.dot([i, j, 1]) # lambda * X' = P * X
+            new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
+            
+            if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and            new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
+                tmp1 = img.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
+                tmp2 = img.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
+                img_copy.putpixel((i, j), tmp2)
+    
+    fig = plt.figure(figsize = (16, 9))
+
+    plt.subplot(1, 2, 1)
+    plt.imshow(img)
+    plt.title('Input')
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(img_copy)
+    plt.title('Output')
+
+    plt.tight_layout()
+    plt.show()
 
 
-# In[22]:
-
-
-P_matrix.round() == P_matrix_DLT_scaled.round()
-
-
-# In[23]:
-
-
-from PIL import Image
-import matplotlib.pyplot as plt
-import math
-
-img = Image.open("box.jpg")
-img_copy = Image.new('RGB', (img.size[0], img.size[1]), "black")
-print("Image size: {} x {}".format(img.size[1], img.size[0]))
-        
-# box.jpg
-points = [[390, 620, 1],
-          [770, 510, 1],
-          [775, 300, 1],
-          [380, 390, 1]]
-
-points_proj = [[200, 600, 1],
-               [800, 600, 1],
-               [800, 200, 1],
-               [200, 200, 1]]
-
-points = [[a/c, b/c, 1] for [a,b,c] in points]
-points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
-               
-P_dlt = dlt(points, points_proj)
-P_rescaled = np.array(P_dlt).reshape((3, 3))
-
-P_inverse = np.linalg.inv(P_rescaled)
-cols = img_copy.size[0]
-rows = img_copy.size[1]
-
-for i in range(cols):        
-    for j in range(rows):  
-        
-        new_coordinates = P_inverse.dot([i, j, 1]) # lambda * X' = P * X
-        new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
-        
-        if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and            new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
-            tmp1 = img.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
-            tmp2 = img.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
-            img_copy.putpixel((i, j), tmp2)
-       
-
-
-# In[24]:
-
-
-fig = plt.figure(figsize = (16, 9))
-
-plt.subplot(1, 2, 1)
-plt.imshow(img)
-plt.title('Input')
-
-plt.subplot(1, 2, 2)
-plt.imshow(img_copy)
-plt.title('Output')
-
-plt.tight_layout()
-plt.show()
-
-
-# ### 3. DLT Normalizacija 
-
-# In[25]:
-
-
-from scipy.spatial import distance
-import numpy as np
-import math
-
-def dlt(points, points_proj):    
-    big_matrix = []
-    n = len(points)
-    for i in range(n):
-        big_matrix.append( [0, 0, 0, 
-         -points_proj[i][2]*points[i][0], -points_proj[i][2]*points[i][1], -points_proj[i][2]*points[i][2], 
-         points_proj[i][1]*points[i][0], points_proj[i][1]*points[i][1], points_proj[i][1]*points[i][2]])     
-
-        big_matrix.append([points_proj[i][2]*points[i][0], points_proj[i][2]*points[i][1], points_proj[i][2]*points[i][2],
-         0, 0, 0,
-         -points_proj[i][0]*points[i][0], -points_proj[i][0]*points[i][1], -points_proj[i][0]*points[i][2]])
-
-    _, _, V = np.linalg.svd(big_matrix, full_matrices = True)
-    P_matrix_DLT = V[8]*(-1) # (-1 jer eto u Pythonu je tako čudno)
-    return P_matrix_DLT
+#### 3. DLT Normalizacija 
 
 def normalize(ps):
-    
     # prvi korak je centar mase
     mass_center_x = sum([a[0] for a in ps]) / len(ps)
     mass_center_y = sum([a[1] for a in ps]) / len(ps)
@@ -360,7 +300,6 @@ def normalize(ps):
     T_matrix = [[math.sqrt(2)/k, 0, mass_center_x*(-1)],
                  [0, math.sqrt(2)/k, mass_center_y*(-1)],
                  [0, 0, 1]]
-        
     return T_matrix
 
 def homo_coeff(points_prim):
@@ -389,10 +328,6 @@ def dlt_normalize(points, points_proj):
     result = (np.linalg.inv(T_prim_matrix)).dot(dlt_matrix).dot(T_matrix)
     return result
 
-
-# In[26]:
-
-
 points = [[-3, -1, 1],
           [3, -1, 1],
           [1, 1, 1],
@@ -411,63 +346,59 @@ points = [[a/c, b/c, 1] for [a,b,c] in points]
 points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
 
 result = dlt_normalize(points, points_proj)
+print("Matrica dobijena DLP normalizovanim algoritmom: ")
 print(result.round(decimals=5))
+print()
 
+def draw_dlt_norm_pic():
+    img = Image.open("box.jpg")
+    img_copy = Image.new('RGB', (img.size[0], img.size[1]), "black")
+    print("Image size: {} x {}".format(img.size[1], img.size[0]))
+            
+    # box.jpg
+    points = [[390, 620, 1],
+            [770, 510, 1],
+            [775, 300, 1],
+            [380, 390, 1]]
 
-# In[27]:
+    points_proj = [[200, 600, 1],
+                [800, 600, 1],
+                [800, 200, 1],
+                [200, 200, 1]]
 
+    points = [[a/c, b/c, 1] for [a,b,c] in points]
+    points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
+                
+    P_dltN = dlt_normalize(points, points_proj)
+    P_rescaled = np.array(P_dltN).reshape((3, 3))
 
-from PIL import Image
-import matplotlib.pyplot as plt
-import math
+    P_inverse = np.linalg.inv(P_rescaled)
+    cols = img_copy.size[0]
+    rows = img_copy.size[1]
 
-img = Image.open("box.jpg")
-img_copy = Image.new('RGB', (img.size[0], img.size[1]), "black")
-print("Image size: {} x {}".format(img.size[1], img.size[0]))
+    for i in range(cols):        
+        for j in range(rows):  
+            
+            new_coordinates = P_inverse.dot([i, j, 1]) # lambda * X' = P * X
+            new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
+            
+            if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and            new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
+                tmp1 = img.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
+                tmp2 = img.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
+                img_copy.putpixel((i, j), tmp2)
         
-# box.jpg
-points = [[390, 620, 1],
-          [770, 510, 1],
-          [775, 300, 1],
-          [380, 390, 1]]
-
-points_proj = [[200, 600, 1],
-               [800, 600, 1],
-               [800, 200, 1],
-               [200, 200, 1]]
-
-points = [[a/c, b/c, 1] for [a,b,c] in points]
-points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
-               
-P_dltN = dlt_normalize(points, points_proj)
-P_rescaled = np.array(P_dltN).reshape((3, 3))
-
-P_inverse = np.linalg.inv(P_rescaled)
-cols = img_copy.size[0]
-rows = img_copy.size[1]
-
-for i in range(cols):        
-    for j in range(rows):  
         
-        new_coordinates = P_inverse.dot([i, j, 1]) # lambda * X' = P * X
-        new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
-        
-        if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and            new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
-            tmp1 = img.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
-            tmp2 = img.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
-            img_copy.putpixel((i, j), tmp2)
-       
-    
-fig = plt.figure(figsize = (16, 9))
+    fig = plt.figure(figsize = (16, 9))
 
-plt.subplot(1, 2, 1)
-plt.imshow(img)
-plt.title('Input')
+    plt.subplot(1, 2, 1)
+    plt.imshow(img)
+    plt.title('Input')
 
-plt.subplot(1, 2, 2)
-plt.imshow(img_copy)
-plt.title('Output')
+    plt.subplot(1, 2, 2)
+    plt.imshow(img_copy)
+    plt.title('Output')
 
-plt.tight_layout()
-plt.show()
+    plt.tight_layout()
+    plt.show()
 
+draw_dlt_pic()
