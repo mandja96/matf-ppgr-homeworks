@@ -2,9 +2,6 @@ import numpy as np
 import math
 from PIL import Image
 
-points = []
-points_proj = []
-
 canonical_points = [[1, 0, 0], 
                     [0, 1, 0], 
                     [0, 0, 1],
@@ -57,6 +54,9 @@ def projection_matrix_P(points, points_proj):
     return (P, lambda1, lambda2, lambda3)
 
 def naive(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original): 
+    points = []
+    points_proj = []
+    
     img_copy = Image.new('RGB', (img_original.size[0], img_original.size[1]), "black")
 
     coords = zip(xs, ys)
@@ -82,17 +82,60 @@ def naive(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
     for i in range(cols):        
         for j in range(rows):    
             new_coordinates = P_inverse.dot([i, j, 1]) # lambda * X' = P * X
-            new_coordinates = [x / new_coordinates[2] / lambda3  for x in new_coordinates]
+            new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
             
             if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and \
             new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
-                #tmp1 = img.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
+                #tmp1 = img_original.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
                 tmp2 = img_original.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
                 img_copy.putpixel((i, j), tmp2)
 
     img_copy.save("out.bmp")
 
+def naive_return(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original): 
+    points = []
+    points_proj = []
+    
+    img_copy = Image.new('RGB', (img_original.size[0], img_original.size[1]), "black")
+
+    coords = zip(xs, ys)
+    for (a,b) in coords:
+        a = a * img_original.size[0] / proj_width
+        b = img_original.size[1] * b / proj_height
+        point = [a, b, 1]
+        points.append(point)
+
+    coords = zip(xs_proj, ys_proj)
+    for (a,b) in coords:
+        a = a * img_original.size[0] / proj_width
+        b = img_original.size[1] * b / proj_height
+        point_proj = [a, b, 1]
+        points_proj.append(point_proj)
+
+    (P, lambda1, lambda2, lambda3) = projection_matrix_P(points, points_proj)
+    P_inverse = np.linalg.inv(P)
+
+    cols = img_copy.size[0]
+    rows = img_copy.size[1]
+
+    for i in range(cols):        
+        for j in range(rows):    
+            new_coordinates = P_inverse.dot([i, j, 1]) # lambda * X' = P * X
+            new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
+            
+            if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and \
+            new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
+                #tmp1 = img_original.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
+                tmp2 = img_original.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
+                img_copy.putpixel((i, j), tmp2)
+    return P
+
 def dlt(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
+    P = naive_return(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original)
+
+    points = []
+    points_proj = []
+
     img_copy = Image.new('RGB', (img_original.size[0], img_original.size[1]), "black")
 
     coords = zip(xs, ys)
@@ -110,7 +153,8 @@ def dlt(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
         points_proj.append(point_proj)
 
     big_matrix = []
-    for i in range(len(xs)):
+    n = len(xs)
+    for i in range(n):
         big_matrix.append( [0, 0, 0, 
             -points_proj[i][2]*points[i][0], -points_proj[i][2]*points[i][1], -points_proj[i][2]*points[i][2], 
             points_proj[i][1]*points[i][0], points_proj[i][1]*points[i][1], points_proj[i][1]*points[i][2]])
@@ -119,14 +163,11 @@ def dlt(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
             0, 0, 0,
             -points_proj[i][0]*points[i][0], -points_proj[i][0]*points[i][1], -points_proj[i][0]*points[i][2]])
 
-    
-    U, D, V = np.linalg.svd(big_matrix, full_matrices = True)
-    V[8].round()
+    _, _, V = np.linalg.svd(big_matrix, full_matrices = True)
     P_matrix_DLT = V[8]
-    P_matrix_DLT = np.array(P_matrix_DLT).reshape((3, 3))
-    P_matrix_DLT_inverse = np.linalg.pinv(P_matrix_DLT)
-
-    print(P_matrix_DLT)
+    P_scaled = [(x / P_matrix_DLT[0] * P[0][0]) for x in P_matrix_DLT]
+    P_matrix_DLT_reshaped = np.array(P_scaled).reshape((3, 3))
+    P_matrix_DLT_inverse = np.linalg.inv(P_matrix_DLT_reshaped)
 
     cols = img_copy.size[0]
     rows = img_copy.size[1]
@@ -134,10 +175,11 @@ def dlt(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
     for i in range(cols):        
         for j in range(rows):    
             new_coordinates = P_matrix_DLT_inverse.dot([i, j, 1])
+            new_coordinates = [(x / new_coordinates[2]) for x in new_coordinates]
             
             if (new_coordinates[0] >= 0 and new_coordinates[0] < cols-1 and \
-            new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
-                #tmp1 = img.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
+                new_coordinates[1] >= 0 and new_coordinates[1] < rows-1):
+                #tmp1 = img_original.getpixel((math.floor(new_coordinates[0]), math.floor(new_coordinates[1])))
                 tmp2 = img_original.getpixel((math.ceil(new_coordinates[0]), math.ceil(new_coordinates[1])))
                 img_copy.putpixel((i, j), tmp2)
 

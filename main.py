@@ -9,8 +9,8 @@ class Window(QtWidgets.QWidget):
         super().__init__()
 
         self.title = "Računanje projektivnog preslikavanja i otklanjanje distorzije"
-        self.top = 100
-        self.left = 100
+        self.top = 50
+        self.left = 50
         self.width = 1200
         self.height = 675
 
@@ -23,7 +23,7 @@ class Window(QtWidgets.QWidget):
         self.fileName = ""
         self.nPoints = 0
     
-        self.setFixedSize(1200, 675)
+        self.setFixedSize(1400, 787.5)
         #self.showFullScreen()
         self.InitWindow()
 
@@ -83,11 +83,11 @@ class Window(QtWidgets.QWidget):
         #self.lineEdit1 = QtWidgets.QLineEdit(placeholderText="Unesite broj tačaka:")
 
         self.label1 = QtWidgets.QLabel("Pogledajte u padajući meni! :)")
-        self.label1.setGeometry(QtCore.QRect(0, 0, 600, 800))
+        #self.label1.setGeometry(QtCore.QRect(0, 0, 700, 700))
         hbox.addWidget(self.label1)
 
         self.label2 = QtWidgets.QLabel("")
-        self.label2.setGeometry(QtCore.QRect(600, 0, 600, 800))
+        #self.label2.setGeometry(QtCore.QRect(700, 0, 700, 700))
         hbox.addWidget(self.label2)
         
         #vbox.addWidget(self.lineEdit1)        
@@ -109,10 +109,13 @@ class Window(QtWidgets.QWidget):
         pixmap2 = QtGui.QPixmap("black.jpg")
 
     
-        pixmap_resized = pixmap.scaled(600, 800, QtCore.Qt.KeepAspectRatio)
+        pixmap_resized = pixmap.scaled(700, 700, QtCore.Qt.KeepAspectRatio)
         pixmap2_resized = pixmap2.scaled(pixmap_resized.width(), pixmap_resized.height())
 
+        self.label1.resize(pixmap_resized.width(), pixmap_resized.height())
         self.label1.setPixmap(QtGui.QPixmap(pixmap_resized))
+
+        self.label2.resize(pixmap_resized.width(), pixmap_resized.height())
         self.label2.setPixmap(QtGui.QPixmap(pixmap2_resized))
 
         #self.resize(pixmap_resized.width(), pixmap_resized.height())
@@ -182,7 +185,6 @@ class Window(QtWidgets.QWidget):
             pass  
 
     # TODO 
-    # nesto ne radi ovaj dlt
     def on_click_dlt(self):
         if (len(self.xs) == self.nPoints):
 
@@ -200,6 +202,7 @@ class Window(QtWidgets.QWidget):
 
             pixmap = QtGui.QPixmap("out.bmp")
             pixmap_resized = pixmap.scaled(proj_width, proj_height)
+            self.label2.resize(proj_width, proj_height)
             self.label2.setPixmap(QtGui.QPixmap(pixmap_resized))
         else:
             pass  
