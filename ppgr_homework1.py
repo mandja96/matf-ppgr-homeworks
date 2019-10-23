@@ -82,6 +82,7 @@ def naive(points, points_proj):
     return (P_matrix, lambda1, lambda2, lambda3)
 
 P_matrix, lambda1, lambda2, lambda3 = naive(points, points_proj)
+print("######## NAIVNI ########")
 print("Matrica naivnog algoritma, zaokruzena na 5 decimala: ")
 print(P_matrix.round(decimals=5))
 print()
@@ -222,6 +223,8 @@ def dlt_rescale(points, points_proj):
     return P_matrix_DLT_rescaled
 
 P_matrix_DLT = dlt(points, points_proj)
+
+print("######## DLP ########")
 print("Matrica za DLT algoritam: ")
 print(P_matrix_DLT.reshape((3,3)).round(decimals=5))
 print()
@@ -326,6 +329,12 @@ def dlt_normalize(points, points_proj):
     dlt_matrix = np.array(dlt_matrix).reshape((3, 3))
 
     result = (np.linalg.inv(T_prim_matrix)).dot(dlt_matrix).dot(T_matrix)
+
+    print("T_matrix: ")
+    print(T_matrix)
+    print("T_prim_matrix:")
+    print(T_prim_matrix)
+
     return result
 
 points = [[-3, -1, 1],
@@ -344,6 +353,8 @@ points_proj = [[-2, -1, 1],
 
 points = [[a/c, b/c, 1] for [a,b,c] in points]
 points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
+
+print("######## DLP NORMALIZOVANI ########")
 
 result = dlt_normalize(points, points_proj)
 print("Matrica dobijena DLP normalizovanim algoritmom: ")
