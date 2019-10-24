@@ -28,3 +28,4 @@ There are two options for testing my homework.
   - Mark N points on the original image and N projected points on the black image
   - Choose witch algorithm you want to use for the image distortion
   
+  Andja
