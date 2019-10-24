@@ -27,5 +27,3 @@ There are two options for testing my homework.
   - Import random image by clicking File in the Main Menu
   - Mark N points on the original image and N projected points on the black image
   - Choose witch algorithm you want to use for the image distortion
-  
-  Andja
