@@ -29,27 +29,27 @@ class Window(QtWidgets.QWidget):
     def InitWindow(self):
 
         vbox = QtWidgets.QVBoxLayout()
-
+    
         hboxInsert = QtWidgets.QHBoxLayout()
+        hboxInsert.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
+        hboxInsert.setSpacing(10)
+        hboxInsert.setContentsMargins(0, 0, 0, 0)
+
         self.imageAdd = QtWidgets.QPushButton("Dodajte sliku")
         self.imageAdd.setFixedSize(150, 50)
-
-        self.numPointsLabel = QtWidgets.QLabel("Unesite broj tačaka:")
-        self.numOfPoints = QtWidgets.QTextEdit()
-        self.numPointsLabel.setFixedSize( 150, 30 )
-        self.numOfPoints.setFixedSize( 80, 30 ) 
-
-        self.numButton = QtWidgets.QPushButton("Potvrdite broj tačaka")
-        self.numButton.setFixedSize(150, 50)
+        self.numOfPoints = QtWidgets.QLineEdit()
+        self.numOfPoints.setPlaceholderText("#tačaka")
+        self.numOfPoints.setFixedSize( 60, 40 ) 
+        self.numButton = QtWidgets.QPushButton("Potvrdi")
+        self.numButton.setFixedSize(100, 50)
         
-        hboxInsert.addWidget(self.imageAdd)
-        
-        hboxInsert.addWidget(self.numPointsLabel)
-        hboxInsert.addWidget(self.numOfPoints)
-        hboxInsert.addWidget(self.numButton)
-
         self.numButton.clicked.connect(self.on_click_numPoints)
         self.imageAdd.clicked.connect(self.file_open)
+        
+        hboxInsert.addWidget(self.numOfPoints)
+        hboxInsert.addWidget(self.numButton)
+        hboxInsert.addWidget(self.imageAdd)
+        
         vbox.addLayout(hboxInsert)
 
         hboxButton = QtWidgets.QHBoxLayout()
@@ -175,7 +175,7 @@ class Window(QtWidgets.QWidget):
 
     def on_click_numPoints(self):
         self.numOfPoints.setReadOnly(True)
-        self.nPoints = int(self.numOfPoints.toPlainText())
+        self.nPoints = int(self.numOfPoints.text())
         print("Broj tacaka: " + str(self.nPoints))
 
     def on_click_naive(self):
