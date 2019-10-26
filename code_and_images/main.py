@@ -23,8 +23,7 @@ class Window(QtWidgets.QWidget):
         self.fileName = ""
         self.nPoints = 0
     
-        self.setFixedSize(1400, 787.5)
-        #self.showFullScreen()
+        self.setFixedSize(1200, 787.5)
         self.InitWindow()
 
     def InitWindow(self):
@@ -32,6 +31,9 @@ class Window(QtWidgets.QWidget):
         vbox = QtWidgets.QVBoxLayout()
 
         hboxInsert = QtWidgets.QHBoxLayout()
+        self.imageAdd = QtWidgets.QPushButton("Dodajte sliku")
+        self.imageAdd.setFixedSize(150, 50)
+
         self.numPointsLabel = QtWidgets.QLabel("Unesite broj tačaka:")
         self.numOfPoints = QtWidgets.QTextEdit()
         self.numPointsLabel.setFixedSize( 150, 30 )
@@ -40,12 +42,14 @@ class Window(QtWidgets.QWidget):
         self.numButton = QtWidgets.QPushButton("Potvrdite broj tačaka")
         self.numButton.setFixedSize(150, 50)
         
+        hboxInsert.addWidget(self.imageAdd)
+        
         hboxInsert.addWidget(self.numPointsLabel)
         hboxInsert.addWidget(self.numOfPoints)
         hboxInsert.addWidget(self.numButton)
 
         self.numButton.clicked.connect(self.on_click_numPoints)
-
+        self.imageAdd.clicked.connect(self.file_open)
         vbox.addLayout(hboxInsert)
 
         hboxButton = QtWidgets.QHBoxLayout()
@@ -57,6 +61,8 @@ class Window(QtWidgets.QWidget):
         self.DLTButton.setFixedSize(200, 60)
         self.DLTNButton = QtWidgets.QPushButton("DLT Normalizovan")
         self.DLTNButton.setFixedSize(200, 60)
+        self.DLTNButton.clicked.connect(self.on_click_dltN)
+
         hboxButton.addWidget(self.naiveButton)
         hboxButton.addWidget(self.DLTButton)
         hboxButton.addWidget(self.DLTNButton)
@@ -83,11 +89,9 @@ class Window(QtWidgets.QWidget):
         #self.lineEdit1 = QtWidgets.QLineEdit(placeholderText="Unesite broj tačaka:")
 
         self.label1 = QtWidgets.QLabel("Pogledajte u padajući meni! :)")
-        #self.label1.setGeometry(QtCore.QRect(0, 0, 700, 700))
         hbox.addWidget(self.label1)
 
         self.label2 = QtWidgets.QLabel("")
-        #self.label2.setGeometry(QtCore.QRect(700, 0, 700, 700))
         hbox.addWidget(self.label2)
         
         #vbox.addWidget(self.lineEdit1)        
@@ -95,12 +99,13 @@ class Window(QtWidgets.QWidget):
         vbox.addLayout(hboxButton)  
 
         self.setLayout(vbox)
+        
         self.show()
 
 
     def file_open(self):
         fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file',
-                                            '.', "Image files (*.jpg *.gif)"
+                                            '.', "Image files (*.jpg *.gif *.png)"
         )
 
         imagePath = fname[0]
@@ -109,19 +114,26 @@ class Window(QtWidgets.QWidget):
         pixmap2 = QtGui.QPixmap("black.jpg")
 
     
-        pixmap_resized = pixmap.scaled(700, 700, QtCore.Qt.KeepAspectRatio)
+        pixmap_resized = pixmap.scaled(600, 600, 
+                                    QtCore.Qt.KeepAspectRatio,
+                                    QtCore.Qt.FastTransformation)
+
         pixmap2_resized = pixmap2.scaled(pixmap_resized.width(), pixmap_resized.height())
 
         self.label1.resize(pixmap_resized.width(), pixmap_resized.height())
-        self.label1.setPixmap(QtGui.QPixmap(pixmap_resized))
+        self.label1.setScaledContents( True )
+        self.label1.setPixmap(QtGui.QPixmap(pixmap))
 
         self.label2.resize(pixmap_resized.width(), pixmap_resized.height())
+        self.label2.setScaledContents( True )
         self.label2.setPixmap(QtGui.QPixmap(pixmap2_resized))
 
-        #self.resize(pixmap_resized.width(), pixmap_resized.height())
         self.label1.mousePressEvent = self.getPos
 
     def getPos(self, event):
+        if(self.nPoints == 0):
+            return
+        
         x = event.pos().x()
         y = event.pos().y() 
 
@@ -141,6 +153,9 @@ class Window(QtWidgets.QWidget):
             self.label2.mousePressEvent = self.getPos2
 
     def getPos2(self, event):
+        if(self.nPoints == 0):
+            return
+        
         x = event.pos().x()
         y = event.pos().y() 
 
@@ -172,19 +187,18 @@ class Window(QtWidgets.QWidget):
             img_original = Image.open(self.fileName)
             algorithms.naive(self.xs, self.ys, self.xs_proj, self.ys_proj, proj_width, proj_height, img_original)
 
-            print("zavrsio je naivni!")
-            # try:
-            #     os.remove("algo.bmp")
-            # except: pass
+            print("Zavrsio je Naivni!")
 
             pixmap = QtGui.QPixmap("out.bmp")
-            pixmap_resized = pixmap.scaled(proj_width, proj_height)
+            pixmap_resized = pixmap.scaled(600, 600, 
+                                    QtCore.Qt.KeepAspectRatio,
+                                    QtCore.Qt.FastTransformation)
+            self.label2.resize(proj_width, proj_height)
             self.label2.setPixmap(QtGui.QPixmap(pixmap_resized))
 
         else:
             pass  
 
-    # TODO 
     def on_click_dlt(self):
         if (len(self.xs) == self.nPoints):
 
@@ -194,19 +208,36 @@ class Window(QtWidgets.QWidget):
             img_original = Image.open(self.fileName)
             algorithms.dlt(self.xs, self.ys, self.xs_proj, self.ys_proj, proj_width, proj_height, img_original)
 
-            print("zavrsio je dlt!")
-            
-            # try:
-            #     os.remove("algo.bmp")
-            # except: pass
+            print("Zavrsio je DLT!")
 
             pixmap = QtGui.QPixmap("out.bmp")
-            pixmap_resized = pixmap.scaled(proj_width, proj_height)
+            pixmap_resized = pixmap.scaled(600, 600, 
+                                        QtCore.Qt.KeepAspectRatio,
+                                        QtCore.Qt.FastTransformation)
             self.label2.resize(proj_width, proj_height)
             self.label2.setPixmap(QtGui.QPixmap(pixmap_resized))
         else:
-            pass  
+            pass 
 
+    def on_click_dltN(self):
+        if (len(self.xs) == self.nPoints):
+
+            proj_width = self.label1.width()
+            proj_height = self.label1.height()
+
+            img_original = Image.open(self.fileName)
+            algorithms.dltN(self.xs, self.ys, self.xs_proj, self.ys_proj, proj_width, proj_height, img_original)
+
+            print("Zavrsio je DLT Normalizovani!")
+
+            pixmap = QtGui.QPixmap("out.bmp")
+            pixmap_resized = pixmap.scaled(600, 600, 
+                                        QtCore.Qt.KeepAspectRatio,
+                                        QtCore.Qt.FastTransformation)
+            self.label2.resize(proj_width, proj_height)
+            self.label2.setPixmap(QtGui.QPixmap(pixmap_resized))
+        else:
+            pass 
 
 App = QtWidgets.QApplication(sys.argv)
 window = Window()

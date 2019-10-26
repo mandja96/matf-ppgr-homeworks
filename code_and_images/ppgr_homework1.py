@@ -134,15 +134,17 @@ def draw_naive_pic():
     print("Image size: {} x {}".format(img.size[1], img.size[0]))
             
     # box.jpg
-    points = [[390, 620, 1],
-            [770, 510, 1],
-            [775, 300, 1],
-            [380, 390, 1]]
+    points = [[390, 650, 1],
+              [770, 520, 1],
+              [780, 300, 1],
+              [380, 390, 1]]
 
-    points_proj = [[200, 600, 1],
-                [800, 600, 1],
-                [800, 200, 1],
-                [200, 200, 1]]
+    points_proj = [[390, 650, 1],
+                   [750, 650, 1],
+                   [750, 410, 1],
+                   [390, 390, 1]]
+
+
                 
     (P, lambda1, lambda2, lambda3) = projection_matrix_P(points, points_proj)
 
@@ -168,7 +170,7 @@ def draw_naive_pic():
 
     plt.subplot(1, 2, 2)
     plt.imshow(img_copy)
-    plt.title('Output')
+    plt.title('Output Naive')
 
     plt.tight_layout()
     plt.show()
@@ -244,15 +246,15 @@ def draw_dlt_pic():
     print("Image size: {} x {}".format(img.size[1], img.size[0]))
             
     # box.jpg
-    points = [[390, 620, 1],
-            [770, 510, 1],
-            [775, 300, 1],
-            [380, 390, 1]]
+    points = [[390, 650, 1],
+              [770, 520, 1],
+              [780, 300, 1],
+              [380, 390, 1]]
 
-    points_proj = [[200, 600, 1],
-                [800, 600, 1],
-                [800, 200, 1],
-                [200, 200, 1]]
+    points_proj = [[390, 650, 1],
+                   [750, 650, 1],
+                   [750, 410, 1],
+                   [390, 390, 1]]
 
     points = [[a/c, b/c, 1] for [a,b,c] in points]
     points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
@@ -283,7 +285,7 @@ def draw_dlt_pic():
 
     plt.subplot(1, 2, 2)
     plt.imshow(img_copy)
-    plt.title('Output')
+    plt.title('Output DLT')
 
     plt.tight_layout()
     plt.show()
@@ -367,15 +369,15 @@ def draw_dlt_norm_pic():
     print("Image size: {} x {}".format(img.size[1], img.size[0]))
             
     # box.jpg
-    points = [[390, 620, 1],
-            [770, 510, 1],
-            [775, 300, 1],
-            [380, 390, 1]]
+    points = [[390, 650, 1],
+              [770, 520, 1],
+              [780, 300, 1],
+              [380, 390, 1]]
 
-    points_proj = [[200, 600, 1],
-                [800, 600, 1],
-                [800, 200, 1],
-                [200, 200, 1]]
+    points_proj = [[390, 650, 1],
+                   [750, 650, 1],
+                   [750, 410, 1],
+                   [390, 390, 1]]
 
     points = [[a/c, b/c, 1] for [a,b,c] in points]
     points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
@@ -407,7 +409,7 @@ def draw_dlt_norm_pic():
 
     plt.subplot(1, 2, 2)
     plt.imshow(img_copy)
-    plt.title('Output')
+    plt.title('Output DLT Normalized')
 
     plt.tight_layout()
     plt.show()
