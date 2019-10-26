@@ -25,6 +25,7 @@ class Window(QtWidgets.QWidget):
     
         self.setFixedSize(1200, 787.5)
         self.InitWindow()
+        self.show()
 
     def InitWindow(self):
 
@@ -67,10 +68,6 @@ class Window(QtWidgets.QWidget):
         hboxButton.addWidget(self.DLTButton)
         hboxButton.addWidget(self.DLTNButton)
 
-#        self.setWindowIcon(QtGui.QIcon("icon.png"))
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-
         hbox = QtWidgets.QHBoxLayout()
         hbox.setContentsMargins(50, 20, 50, 20)
         menu_bar = QtWidgets.QMenuBar()
@@ -86,22 +83,21 @@ class Window(QtWidgets.QWidget):
         fileMenu = menu_bar.addMenu('&File')
         fileMenu.addAction(openFile)
 
-        #self.lineEdit1 = QtWidgets.QLineEdit(placeholderText="Unesite broj tačaka:")
-
         self.label1 = QtWidgets.QLabel("Pogledajte u padajući meni! :)")
         hbox.addWidget(self.label1)
 
         self.label2 = QtWidgets.QLabel("")
         hbox.addWidget(self.label2)
         
-        #vbox.addWidget(self.lineEdit1)        
         vbox.addLayout(hbox)      
         vbox.addLayout(hboxButton)  
 
         self.setLayout(vbox)
+        self.setWindowTitle(self.title)
+        self.setWindowIcon(QtGui.QIcon("icon.png"))
+        self.setGeometry(self.left, self.top, self.width, self.height)
         
         self.show()
-
 
     def file_open(self):
         fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file',
@@ -114,7 +110,7 @@ class Window(QtWidgets.QWidget):
         pixmap2 = QtGui.QPixmap("black.jpg")
 
     
-        pixmap_resized = pixmap.scaled(600, 600, 
+        pixmap_resized = pixmap.scaled(600, 800, 
                                     QtCore.Qt.KeepAspectRatio,
                                     QtCore.Qt.FastTransformation)
 
@@ -122,7 +118,7 @@ class Window(QtWidgets.QWidget):
 
         self.label1.resize(pixmap_resized.width(), pixmap_resized.height())
         self.label1.setScaledContents( True )
-        self.label1.setPixmap(QtGui.QPixmap(pixmap))
+        self.label1.setPixmap(QtGui.QPixmap(pixmap_resized))
 
         self.label2.resize(pixmap_resized.width(), pixmap_resized.height())
         self.label2.setScaledContents( True )
@@ -135,11 +131,9 @@ class Window(QtWidgets.QWidget):
             return
         
         x = event.pos().x()
-        y = event.pos().y() 
-
+        y = event.pos().y()
         self.xs.append(x)
         self.ys.append(y)
-
 
         if(len(self.xs) < (self.nPoints + 1) and len(self.xs) != self.nPoints):
             QtWidgets.QMessageBox.about(self, "Koordinate originala", 
@@ -158,7 +152,6 @@ class Window(QtWidgets.QWidget):
         
         x = event.pos().x()
         y = event.pos().y() 
-
         self.xs_proj.append(x)
         self.ys_proj.append(y)
         
@@ -190,7 +183,7 @@ class Window(QtWidgets.QWidget):
             print("Zavrsio je Naivni!")
 
             pixmap = QtGui.QPixmap("out.bmp")
-            pixmap_resized = pixmap.scaled(600, 600, 
+            pixmap_resized = pixmap.scaled(600, 800, 
                                     QtCore.Qt.KeepAspectRatio,
                                     QtCore.Qt.FastTransformation)
             self.label2.resize(proj_width, proj_height)
@@ -211,7 +204,7 @@ class Window(QtWidgets.QWidget):
             print("Zavrsio je DLT!")
 
             pixmap = QtGui.QPixmap("out.bmp")
-            pixmap_resized = pixmap.scaled(600, 600, 
+            pixmap_resized = pixmap.scaled(600, 800, 
                                         QtCore.Qt.KeepAspectRatio,
                                         QtCore.Qt.FastTransformation)
             self.label2.resize(proj_width, proj_height)

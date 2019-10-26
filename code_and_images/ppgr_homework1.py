@@ -227,7 +227,7 @@ def dlt_rescale(points, points_proj):
 P_matrix_DLT = dlt(points, points_proj)
 
 print("######## DLP ########")
-print("Matrica za DLT algoritam: ")
+print("Matrica za DLT algoritam sa 6 tačaka: ")
 print(P_matrix_DLT.reshape((3,3)).round(decimals=5))
 print()
 
@@ -235,7 +235,7 @@ print()
 P_matrix_DLT_scaled = dlt_rescale(points, points_proj)
 P_matrix_DLT_scaled = np.array(P_matrix_DLT_scaled).reshape((3, 3))
 
-print("Poredjenje vrednosti matrica naivnog i DLT algoritma:")
+print("Poređenje vrednosti matrica naivnog i DLT algoritma:")
 print(P_matrix.round() == P_matrix_DLT_scaled.round())
 print()
 print()
@@ -332,12 +332,20 @@ def dlt_normalize(points, points_proj):
 
     result = (np.linalg.inv(T_prim_matrix)).dot(dlt_matrix).dot(T_matrix)
 
-    print("T_matrix: ")
-    print(T_matrix)
-    print("T_prim_matrix:")
-    print(T_prim_matrix)
+    return result, T_matrix, T_prim_matrix 
 
-    return result
+def dltN_rescale(points, points_proj):
+    points = [[a/c, b/c, 1] for [a,b,c] in points]
+    points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
+    
+    P_matrix_DLTN, T_matrix, T_prim_matrix = dlt_normalize(points, points_proj)
+    P_matrix, _, _, _ = naive(points, points_proj)
+
+    tmp = P_matrix_DLTN.flatten()
+    P_matrix_DLTN_scaled = [(x / tmp[0] * P_matrix[0][0]) for x in tmp]
+    P_matrix_DLTN_rescaled = np.array(P_matrix_DLTN_scaled).reshape((3, 3))
+
+    return P_matrix_DLTN_rescaled
 
 points = [[-3, -1, 1],
           [3, -1, 1],
@@ -356,12 +364,26 @@ points_proj = [[-2, -1, 1],
 points = [[a/c, b/c, 1] for [a,b,c] in points]
 points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
 
-print("######## DLP NORMALIZOVANI ########")
+dltN_rescale = dltN_rescale(points, points_proj)
 
-result = dlt_normalize(points, points_proj)
-print("Matrica dobijena DLP normalizovanim algoritmom: ")
+result, T_matrix, T_prim_matrix = dlt_normalize(points, points_proj)
+print("######## DLP NORMALIZOVANI ########")
+print("T matrica")
+print(T_matrix)
+print()
+print("T' matrica")
+print(T_prim_matrix)
+print()
+print("Matrica dobijena DLP normalizovanim algoritmom za 6 tačaka: ")
 print(result.round(decimals=5))
 print()
+print(" Provera poređenjem matrice Naivnog i DLP Norm skaliranog ")
+print(dltN_rescale)
+print("Ista ta matrica zaokružena na 5 decimala")
+print(dltN_rescale.round(decimals=5))
+print() 
+print()
+
 
 def draw_dlt_norm_pic():
     img = Image.open("box.jpg")
@@ -382,7 +404,7 @@ def draw_dlt_norm_pic():
     points = [[a/c, b/c, 1] for [a,b,c] in points]
     points_proj = [[a/c, b/c, 1] for [a,b,c] in points_proj]
                 
-    P_dltN = dlt_normalize(points, points_proj)
+    P_dltN, T_matrix, T_prim_matrix = dlt_normalize(points, points_proj)
     P_rescaled = np.array(P_dltN).reshape((3, 3))
 
     P_inverse = np.linalg.inv(P_rescaled)
