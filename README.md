@@ -18,12 +18,13 @@ $. python3 main.py
 ```
 
 #### Files explanation  
-There are two options for testing my homework.  
+There are three options for testing my homework.  
   1. running file: ppgr_homework1.py with python3
-  2. running file: main.py with python3 where I have implemented GUI
+  2. running file: ppgr_homework1.ipynb with jupyter notebook
+  3. running file: main.py with python3 where I have implemented simple GUI
 
-#### Explaining GUI
+#### Explaining option 3 with GUI
   - Insert how many points you want to select on image, lets say N
-  - Import random image by clicking File in the Main Menu
+  - Import random image by clicking on the button or in File->Open Image
   - Mark N points on the original image and N projected points on the black image
-  - Choose witch algorithm you want to use for the image distortion
+  - Choose witch algorithm you want to use for fixing the image distortion
