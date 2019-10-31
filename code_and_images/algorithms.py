@@ -79,7 +79,7 @@ def naive(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
 
     img_copy = Image.new('RGB', (img_original.size[0], img_original.size[1]), "black")
 
-    (P, lambda1, lambda2, lambda3) = projection_matrix_P(points, points_proj)
+    (P, _, _, _) = projection_matrix_P(points, points_proj)
     P_inverse = np.linalg.inv(P)
 
     cols = img_copy.size[0]
@@ -101,7 +101,7 @@ def naive(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
 def naive_return(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original): 
     points, points_proj = transform_coordinates(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original)
 
-    (P, lambda1, lambda2, lambda3) = projection_matrix_P(points, points_proj) 
+    (P, _, _, _) = projection_matrix_P(points, points_proj) 
     return P
 
 def dlt(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
@@ -110,19 +110,8 @@ def dlt(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original):
     img_copy = Image.new('RGB', (img_original.size[0], img_original.size[1]), "black")
     points, points_proj = transform_coordinates(xs, ys, xs_proj, ys_proj, proj_width, proj_height, img_original)
     
-    big_matrix = []
-    n = len(xs)
-    for i in range(n):
-        big_matrix.append( [0, 0, 0, 
-            -points_proj[i][2]*points[i][0], -points_proj[i][2]*points[i][1], -points_proj[i][2]*points[i][2], 
-            points_proj[i][1]*points[i][0], points_proj[i][1]*points[i][1], points_proj[i][1]*points[i][2]])
-        
-        big_matrix.append([points_proj[i][2]*points[i][0], points_proj[i][2]*points[i][1], points_proj[i][2]*points[i][2],
-            0, 0, 0,
-            -points_proj[i][0]*points[i][0], -points_proj[i][0]*points[i][1], -points_proj[i][0]*points[i][2]])
+    P_matrix_DLT = dlt_basic(points, points_proj)
 
-    _, _, V = np.linalg.svd(big_matrix, full_matrices = True)
-    P_matrix_DLT = V[8] * (-1)
     P_scaled = [(x / P_matrix_DLT[0] * P[0][0]) for x in P_matrix_DLT]
     P_matrix_DLT_reshaped = np.array(P_scaled).reshape((3, 3))
     P_matrix_DLT_inverse = np.linalg.inv(P_matrix_DLT_reshaped)
