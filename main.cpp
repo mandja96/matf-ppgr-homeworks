@@ -17,16 +17,21 @@ void Q2AxisAngle(Eigen::Vector4d q);
 
 int main(){
     double phi, theta, psi;
-    //std::cout << "Unesite uglove: " << std::endl;
-    //std::cin >> phi >> theta >> psi;
-
-    phi = -0.244978663;
-    theta = -1.09491408;
-    psi = 1.32581766;
+    
+    /* Test primer 1 */
+    
+    //phi = -0.244978663;
+    //theta = -1.09491408;
+    //psi = 1.32581766;
+    
+    /* Moj test primer */
+    phi = 20 * PI / 180;
+    theta = -45 * PI / 180;
+    psi = -60 * PI / 180;
 
     std::cout << std::endl << "Uneti uglovi su: " << std::endl;
     std::cout << phi * 180 / PI << ", " << theta * 180 / PI << ", " << psi * 180 / PI << std::endl << std::endl; 
-    std::cout << "--------------------------------" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
     auto M = Euler2A(phi, theta, psi);
     auto par = AxisAngle(M);
     Eigen::Vector3d p = par.first;
@@ -78,7 +83,7 @@ Eigen::Matrix3d Euler2A(const double& phi,
     std::cout << "Matrica dobijena mnozenjem Rz*Ry*Rx:" << std::endl;
     std::cout << Rz*Ry*Rx << std::endl << std::endl;
 
-    std::cout << "--------------------------------" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
     return M;    
 }
 
@@ -97,8 +102,8 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
     // je slika baznog repera    
     auto tmp = A.transpose() * A;
     if(tmp.isIdentity()){
-        std::cout << "Matrica A.T*A jeste jedinična:" << std::endl;
-        std::cout << tmp << std::endl <<std::endl;        
+        std::cout << "Matrica A.T*A jeste jedinična." << std::endl;
+        //std::cout << tmp << std::endl <<std::endl;
     }
 
     if( tmp.isIdentity() && determinant == 1 ){
@@ -170,15 +175,16 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
     std::cout << mixedProduct << std::endl;
 
     if(mixedProduct < 0){
-        std::cout << "Menjamo smer. Vektor oko kog rotiramo je sada: " << std::endl << 
+        std::cout << "Menjamo smer. Vektor oko kog rotiramo je sada: " << std::endl <<
             -p << std::endl << std::endl;
+        p = -p;
     }
     else{
         std::cout << "Ne menjamo smer vektora p!" << std::endl << std::endl;
     }
 
     std::pair<Eigen::Vector3d, double> par = {p, angle};
-    std::cout << "--------------------------------" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
     return par;
 }
 
@@ -198,7 +204,7 @@ Eigen::Matrix3d Rodrigez(Eigen::Vector3d p, const double& angle){
 
     std::cout << "Matrica rotacije dobijena Rodrigezovom formulom: " << std::endl;
     std::cout << R << std::endl;
-    std::cout << "--------------------------------" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
     return R;
 }
 
@@ -235,7 +241,7 @@ std::vector<double> A2Euler(Eigen::Matrix3d A){
     std::cout << "θ = " << theta * 180 / PI << " [stepeni]" << std::endl;
     std::cout << "ψ = " << psi * 180 / PI << " [stepeni]" << std::endl << std::endl;
 
-    std::cout << "--------------------------------" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
     return angles;
 } 
 
@@ -259,7 +265,7 @@ Eigen::Vector4d AxisAngle2Q(Eigen::Vector3d p, double phi){
     std::cout << "Kvaternion q: (" << x << ", " << y << ", " << z << ", "
         << w << ")" << std::endl << std::endl;
 
-    std::cout << "--------------------------------" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
     return q;
 }
 
@@ -288,5 +294,5 @@ void Q2AxisAngle(Eigen::Vector4d q){
     std::cout << "Ugao je: " << angle << " [rad]"<< std::endl;
     std::cout << "Ugao je: " << angle*180/PI << " [stepeni]"<< std::endl;
     std::cout << "Vektor p je: " <<std::endl << p << std::endl << std::endl;
-    std::cout << "--------------------------------" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
 }
