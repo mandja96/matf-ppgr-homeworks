@@ -19,11 +19,10 @@ int main(){
     double phi, theta, psi;
     
     /* Test primer 1 */
-    
-    //phi = -0.244978663;
-    //theta = -1.09491408;
-    //psi = 1.32581766;
-    
+//    phi = -0.244978663;
+//    theta = -1.09491408;
+//    psi = 1.32581766;
+//
     /* Moj test primer */
     phi = 20 * PI / 180;
     theta = -45 * PI / 180;
