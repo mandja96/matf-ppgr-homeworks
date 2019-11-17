@@ -22,7 +22,12 @@ class Window(QtWidgets.QWidget):
 
         self.fileName = ""
         self.nPoints = 0
-    
+        
+        self.pixmap = QtGui.QPixmap()
+        self.painter1 = QtGui.QPainter()
+        self.pixmap2 = QtGui.QPixmap()
+        self.painter2 = QtGui.QPainter()
+        
         self.setFixedSize(1200, 787.5)
         self.InitWindow()
         self.show()
@@ -106,23 +111,27 @@ class Window(QtWidgets.QWidget):
 
         imagePath = fname[0]
         self.fileName = imagePath
-        pixmap = QtGui.QPixmap(imagePath)
-        pixmap2 = QtGui.QPixmap("black.jpg")
+        
+        self.pixmap = QtGui.QPixmap(imagePath)
+        self.pixmap2 = QtGui.QPixmap("black.jpg")
 
-    
-        pixmap_resized = pixmap.scaled(600, 800, 
+        self.pixmap = self.pixmap.scaled(500, 700, 
                                     QtCore.Qt.KeepAspectRatio,
                                     QtCore.Qt.FastTransformation)
 
-        pixmap2_resized = pixmap2.scaled(pixmap_resized.width(), pixmap_resized.height())
+        self.pixmap2 = self.pixmap2.scaled(self.pixmap.width(), self.pixmap.height())
 
-        self.label1.resize(pixmap_resized.width(), pixmap_resized.height())
+        self.label1.resize(self.pixmap.width(), self.pixmap.height())
         self.label1.setScaledContents( True )
-        self.label1.setPixmap(QtGui.QPixmap(pixmap_resized))
+        self.painter1 = QtGui.QPainter(self.pixmap)
+        self.painter1.setBrush(QtGui.QBrush(QtCore.Qt.red))
+        self.label1.setPixmap(self.pixmap)
 
-        self.label2.resize(pixmap_resized.width(), pixmap_resized.height())
+        self.label2.resize(self.pixmap.width(), self.pixmap.height())
         self.label2.setScaledContents( True )
-        self.label2.setPixmap(QtGui.QPixmap(pixmap2_resized))
+        self.painter2 = QtGui.QPainter(self.pixmap2)
+        self.painter2.setBrush(QtGui.QBrush(QtCore.Qt.green))
+        self.label2.setPixmap(self.pixmap2)
 
         self.label1.mousePressEvent = self.getPos
 
@@ -132,6 +141,10 @@ class Window(QtWidgets.QWidget):
         
         x = event.pos().x()
         y = event.pos().y()
+
+        self.painter1.drawEllipse(x-5, y-5, 10, 10)
+        self.label1.setPixmap(self.pixmap)
+
         self.xs.append(x)
         self.ys.append(y)
 
@@ -152,6 +165,10 @@ class Window(QtWidgets.QWidget):
         
         x = event.pos().x()
         y = event.pos().y() 
+
+        self.painter2.drawEllipse(x-5, y-5, 10, 10)
+        self.label2.setPixmap(self.pixmap2)
+
         self.xs_proj.append(x)
         self.ys_proj.append(y)
         
@@ -183,11 +200,12 @@ class Window(QtWidgets.QWidget):
             print("Zavrsio je Naivni!")
 
             pixmap = QtGui.QPixmap("out.bmp")
-            pixmap_resized = pixmap.scaled(600, 800, 
-                                    QtCore.Qt.KeepAspectRatio,
-                                    QtCore.Qt.FastTransformation)
+            pixmap = pixmap.scaled(600, 800, 
+                                QtCore.Qt.KeepAspectRatio,
+                                QtCore.Qt.FastTransformation)
+
             self.label2.resize(proj_width, proj_height)
-            self.label2.setPixmap(QtGui.QPixmap(pixmap_resized))
+            self.label2.setPixmap(QtGui.QPixmap(pixmap))
 
         else:
             pass  
