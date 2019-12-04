@@ -1,4 +1,4 @@
-PROGRAM = domaci
+PROGRAM = domaci.out
 GCC = g++
 GCCFLAGS = -std=c++17 -Wall
 LDLIBS = -framework GLUT -framework OpenGL 
