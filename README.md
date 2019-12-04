@@ -1,5 +1,5 @@
 # ppgr-homework-3
-SLERP animation
+Slerp animation - **S**pherical **L**inear int**erp**olation
 
 ### Requirements: 
 - OpenGL
