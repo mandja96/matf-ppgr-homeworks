@@ -62,7 +62,6 @@ static void on_keyboard(unsigned char key, int x, int y){
         case 'g':
         case 'G':
             if(!animation_active){
-                animation_parameter = 0;
                 animation_active = 1;
                 glutTimerFunc(TIMER_INTERVAL, on_timer, 0);
             }
