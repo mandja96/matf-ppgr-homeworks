@@ -31,12 +31,6 @@ Eigen::Matrix3d Euler2A(const double& phi,
          cos(theta)*sin(phi),
          cos(theta)*cos(phi);
 
-    std::cout << "Rezultat Euler2A: " << std::endl;
-    std::cout << M << std::endl << std::endl;
-    std::cout << "Matrica dobijena mnozenjem Rz*Ry*Rx:" << std::endl;
-    std::cout << Rz*Ry*Rx << std::endl << std::endl;
-
-    std::cout << "---------------------------------------------" << std::endl;
     return M;    
 }
 
@@ -50,9 +44,6 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
     Eigen::Vector3d u, u_p;
     int determinant = A.determinant();
 
-    // A.T * A = E znači da kolone matrice A
-    // predstavljaju ortonormirani reper prostora koji
-    // je slika baznog repera    
     auto tmp = A.transpose() * A;
     if(tmp.isIdentity()){
         std::cout << "Matrica A.T*A jeste jedinična." << std::endl;
@@ -60,7 +51,6 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
     }
 
     if( tmp.isIdentity() && determinant == 1 ){
-        // matrica A JESTE matrica kretanja
 
         Eigen::Vector3d firstRow = A.row(0);
         firstRow(0) = firstRow(0) - 1;
@@ -110,7 +100,6 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
     }
 
     else{
-        // matrica A NIJE matrica kretanja
         std::cout << "Matrix is not valid." << std::endl;
     }
 
@@ -199,7 +188,7 @@ std::vector<double> A2Euler(Eigen::Matrix3d A){
 } 
 
 // vraca jednicni kvaternion q = (x,y,z,w) tako da
-// Cq = Rp(φ). Vektor p je jednicni.
+// Cq = Rp(φ). Vektor p je jedinicni.
 Eigen::Vector4d AxisAngle2Q(Eigen::Vector3d p, double phi){
     std::cout << "AxisAngle2Q" << std::endl << std::endl;
 
@@ -222,7 +211,7 @@ Eigen::Vector4d AxisAngle2Q(Eigen::Vector3d p, double phi){
     return q;
 }
 
-void Q2AxisAngle(Eigen::Vector4d q){
+std::pair<Eigen::Vector3d, double> Q2AxisAngle(Eigen::Vector4d q){
     std::cout << "Q2AxisAngle" << std::endl << std::endl;
 
     Eigen::Vector3d p;
@@ -248,4 +237,7 @@ void Q2AxisAngle(Eigen::Vector4d q){
     std::cout << "Ugao je: " << angle*180/PI << " [stepeni]"<< std::endl;
     std::cout << "Vektor p je: " <<std::endl << p << std::endl << std::endl;
     std::cout << "---------------------------------------------" << std::endl;
+    
+    std::pair<Eigen::Vector3d, double> par = {p, angle};
+    return par;
 }

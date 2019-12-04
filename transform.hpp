@@ -18,6 +18,6 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A);
 Eigen::Matrix3d Rodrigez(Eigen::Vector3d p, const double& angle);
 std::vector<double> A2Euler(Eigen::Matrix3d A);
 Eigen::Vector4d AxisAngle2Q(Eigen::Vector3d p, double angle);
-void Q2AxisAngle(Eigen::Vector4d q);
+std::pair<Eigen::Vector3d, double> Q2AxisAngle(Eigen::Vector4d q);
 
 #endif
