@@ -1,5 +1,6 @@
 #define GL_SILENCE_DEPRECATION
 #define TIMER_INTERVAL 50
+#define TIMER_ID 0
 
 #include "transform.hpp"
 #include <GLUT/glut.h>
@@ -13,6 +14,9 @@ static void on_keyboard(unsigned char key, int x, int y);
 static void on_timer(int value);
 
 static void calculate_qs(void);
+static bool flag_q1_close_to_q2 = false;
+Eigen::Vector4d slerp(Eigen::Vector4d& q1, Eigen::Vector4d& q2, float tm, float t);
+
 static double x_1, x_2, y_1, y_2, z_1, z_2;
 static double alpha_1, beta_1, gamma_1; 
 static double alpha_2, beta_2, gamma_2; 
@@ -27,9 +31,11 @@ static Eigen::Vector4d q_s;
 
 static double cos_angle;
 static double angle;
+static double tm;
 
 static void draw_object(void);
 static void draw_axis(void);
+static void draw_start_and_end(void);
 
 int main(int argc, char* argv[]){
     
@@ -46,7 +52,7 @@ int main(int argc, char* argv[]){
 
     animation_active = 0;
     animation_parameter = 0;
-
+    tm = 4;
     calculate_qs();
 
     glClearColor(.05, .05, .05, 0);
@@ -63,7 +69,7 @@ static void on_keyboard(unsigned char key, int x, int y){
         case 'G':
             if(!animation_active){
                 animation_active = 1;
-                glutTimerFunc(TIMER_INTERVAL, on_timer, 0);
+                glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
             }
             break;
         case 's':
@@ -71,9 +77,9 @@ static void on_keyboard(unsigned char key, int x, int y){
             animation_active = 0;
             break;
         case 'r':
-        case 'R':
+        case 'R':   
+            animation_active = 0; 
             animation_parameter = 0;
-            animation_active = 0;
             glutPostRedisplay();
             break;
     }
@@ -81,19 +87,19 @@ static void on_keyboard(unsigned char key, int x, int y){
 
 static void on_timer(int value)
 {
-    if (value != 0)
+    if (value != TIMER_ID)
         return;
 
-    if(x_cur>= x_2){    
+    if(animation_parameter >= tm-0.082){    
         animation_active = 0;
         glutPostRedisplay();
     }
 
-    animation_parameter += 0.1;
+    animation_parameter += 0.05;
     glutPostRedisplay();
 
     if (animation_active) {
-        glutTimerFunc(TIMER_INTERVAL, on_timer, value);
+        glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
     }
 }
 
@@ -112,7 +118,7 @@ static void on_display(void){
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(7, 7, 7, 
+    gluLookAt(5, 5, 5, 
               0, 0, 0, 
               0, 1, 0);
 
@@ -126,7 +132,53 @@ static void on_display(void){
         draw_object();
     glPopMatrix();
 
+    glPushMatrix();
+        draw_start_and_end();
+    glPopMatrix();
+
     glutSwapBuffers();
+}
+
+static void draw_start_and_end(void){
+    glPushMatrix();
+        glColor3f(.9, .9, .9);
+        std::pair<Eigen::Vector3d, double> q2_axis_angle = Q2AxisAngle(q_1);    
+        Eigen::Matrix3d matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
+        GLdouble matrixTransform[16] = 
+            {matrix_A(0, 0), matrix_A(1, 0), matrix_A(2,0), 0,
+             matrix_A(0, 1), matrix_A(1, 1), matrix_A(2,1), 0,
+             matrix_A(0, 2), matrix_A(1, 2), matrix_A(2,2), 0,
+             x_1, y_1, z_1, 1};        
+    
+        glMultMatrixd(matrixTransform);
+        glPushMatrix();
+            glLineWidth(2);
+            glScalef(0.5, 0.5, 0.5);
+            glutWireIcosahedron();
+        glPopMatrix();
+        draw_axis();
+
+    glPopMatrix();
+
+    glPushMatrix();
+        glColor3f(.9, .9, .9);
+        q2_axis_angle = Q2AxisAngle(q_2);    
+        matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
+        GLdouble matrixTransform2[16] = 
+            {matrix_A(0, 0), matrix_A(1, 0), matrix_A(2,0), 0,
+             matrix_A(0, 1), matrix_A(1, 1), matrix_A(2,1), 0,
+             matrix_A(0, 2), matrix_A(1, 2), matrix_A(2,2), 0,
+             x_2, y_2, z_2, 1};        
+    
+        glMultMatrixd(matrixTransform2);
+        glPushMatrix();
+            glLineWidth(2);
+            glScalef(0.5, 0.5, 0.5);
+            glutWireIcosahedron();
+        glPopMatrix();
+        draw_axis();
+
+    glPopMatrix();
 }
 
 static void draw_object(void){
@@ -143,13 +195,17 @@ static void draw_object(void){
 
         // Eigen::Matrix3d matrix_A = Euler2A(alpha_cur, beta_cur, gamma_cur);
 
+        x_cur = (1-animation_parameter/tm)*x_1 + animation_parameter/tm*x_2;
+        y_cur = (1-animation_parameter/tm)*y_1 + animation_parameter/tm*y_2;
+        z_cur = (1-animation_parameter/tm)*z_1 + animation_parameter/tm*z_2;
 
-        x_cur = (1-animation_parameter/5)*x_1 + animation_parameter/5*x_2;
-        y_cur = (1-animation_parameter/5)*y_1 + animation_parameter/5*y_2;
-        z_cur = (1-animation_parameter/5)*z_1 + animation_parameter/5*z_2;
-
-        q_s = sin(angle*(1-animation_parameter/5))/sin(angle)*q_1 
-            + sin(angle*animation_parameter/5)/sin(angle)*q_2;
+        if(flag_q1_close_to_q2){
+            q_s = q_1;
+            flag_q1_close_to_q2 = false;
+        }
+        else {
+            q_s = slerp(q_1, q_2, tm, animation_parameter);
+        }
 
         std::pair<Eigen::Vector3d, double> q2_axis_angle = Q2AxisAngle(q_s);    
         Eigen::Matrix3d matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
@@ -189,10 +245,10 @@ static void draw_axis(void){
 }   
 
 static void calculate_qs(void){
-    x_1 = 0; y_1 = 0; z_1 = 5;
-    x_2 = 3; y_2 = 4; z_2 = 5;
-    alpha_1 = 0; beta_1 = 0; gamma_1 = 5 * PI / 6;
-    alpha_2 = PI/2; beta_2 = 0.0; gamma_2 = PI/2;
+    x_1 = 2; y_1 = 2; z_1 = 0;
+    x_2 = -1; y_2 = 0; z_2 = 2;
+    alpha_1 = PI/6; beta_1 = 2*PI/4; gamma_1 = 3*PI/4;
+    alpha_2 = PI/2; beta_2 = PI/3; gamma_2 = 3*PI/2;
 
     matrix_A = Euler2A(alpha_1, beta_1, gamma_1);
     axis_angle = AxisAngle(matrix_A);
@@ -202,14 +258,27 @@ static void calculate_qs(void){
     axis_angle = AxisAngle(matrix_A);
     q_2 = AxisAngle2Q(axis_angle.first, axis_angle.second);
 
-    std::cout << q_1 << std::endl;
-    std::cout << q_2 << std::endl;
-
+    // jedinicni su
     cos_angle = q_1.dot(q_2);
+
+    // hocemo da idemo kracim putem, pa obrnemo kvaternion 
     if(cos_angle < 0){
         q_1 = -q_1;
         cos_angle = -cos_angle;
     }
 
+    if(cos_angle > 0.95){
+        // vrati q1 kao qs ili radi lerp
+        flag_q1_close_to_q2 = true;
+    }
+
     angle = acos(cos_angle);
+}
+
+Eigen::Vector4d slerp(Eigen::Vector4d& q1, Eigen::Vector4d& q2, float tm, float t){
+    Eigen::Vector4d res;
+    
+    res = sin(angle*(1-t/tm))/sin(angle)*q_1 
+            + sin(angle*t/tm)/sin(angle)*q_2;
+    return res;
 }
