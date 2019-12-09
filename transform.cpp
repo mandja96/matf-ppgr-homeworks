@@ -111,6 +111,7 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
 
 Eigen::Matrix3d Rodrigez(Eigen::Vector3d p, const double& angle){
     Eigen::Matrix3d px;
+    p = p.normalized();
     px << 0, -p(2), p(1),
          p(2), 0, -p(0),
         -p(1), p(0), 0;
@@ -155,6 +156,9 @@ std::vector<double> A2Euler(Eigen::Matrix3d A){
     // std::cout << "ψ = " << psi * 180 / PI << " [stepeni]" << std::endl << std::endl;
 
     // std::cout << "---------------------------------------------" << std::endl;
+    angles.push_back(phi);
+    angles.push_back(theta);
+    angles.push_back(psi);
     return angles;
 } 
 

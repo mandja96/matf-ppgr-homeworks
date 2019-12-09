@@ -18,10 +18,10 @@ static bool flag_q1_close_to_q2 = false;
 Eigen::Vector4d slerp(Eigen::Vector4d& q1, Eigen::Vector4d& q2, float tm, float t);
 
 static double x_1, x_2, y_1, y_2, z_1, z_2;
-static double alpha_1, beta_1, gamma_1; 
+static double alpha_1, beta_1, gamma_1;
 static double alpha_2, beta_2, gamma_2; 
 static double x_cur, y_cur, z_cur;
-// static double alpha_cur, beta_cur, gamma_cur;
+static double alpha_cur, beta_cur, gamma_cur;
 
 static Eigen::Matrix3d matrix_A;
 static std::pair<Eigen::Vector3d, double> axis_angle;
@@ -68,10 +68,18 @@ static void on_keyboard(unsigned char key, int x, int y){
         case 'g':
         case 'G':
             if(!animation_active){
+                animation_parameter = 0;
                 animation_active = 1;
                 glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
             }
             break;
+
+        case 'n':
+        case 'N':
+            if(!animation_active){
+                animation_active = 1;
+                glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
+            }
         case 's':
         case 'S':
             animation_active = 0;
@@ -90,7 +98,7 @@ static void on_timer(int value)
     if (value != TIMER_ID)
         return;
 
-    if(animation_parameter >= tm-0.082){    
+    if(animation_parameter >= tm-0.08){    
         animation_active = 0;
         glutPostRedisplay();
     }
@@ -123,7 +131,7 @@ static void on_display(void){
               0, 1, 0);
 
     glPushMatrix();
-        glScalef(5, 5, 5);
+        glScalef(4, 4, 4);
         draw_axis();
     glPopMatrix();
 
@@ -141,7 +149,7 @@ static void on_display(void){
 
 static void draw_start_and_end(void){
     glPushMatrix();
-        glColor3f(.9, .9, .9);
+        glColor3f(.6, .6, .6);
         std::pair<Eigen::Vector3d, double> q2_axis_angle = Q2AxisAngle(q_1);    
         Eigen::Matrix3d matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
         GLdouble matrixTransform[16] = 
@@ -161,7 +169,7 @@ static void draw_start_and_end(void){
     glPopMatrix();
 
     glPushMatrix();
-        glColor3f(.9, .9, .9);
+        glColor3f(.6, .6, .6);
         q2_axis_angle = Q2AxisAngle(q_2);    
         matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
         GLdouble matrixTransform2[16] = 
@@ -185,13 +193,10 @@ static void draw_object(void){
     glPushMatrix();
         glColor3f(.9, .9, .9);
 
-        // alpha_cur = (1-animation_parameter/5)*alpha_1 + animation_parameter/5*alpha_2; 
-        // beta_cur = (1-animation_parameter/5)*beta_1 + animation_parameter/5*beta_2;
-        // gamma_cur = (1-animation_parameter/5)*gamma_1 + animation_parameter/5*gamma_2;
 
-        // std::cout << "alfa: " << alpha_cur << std::endl;
-        // std::cout << "beta: " << beta_cur << std::endl;
-        // std::cout << "gama: " << gamma_cur << std::endl;
+        // alpha_cur = (1-animation_parameter/tm)*alpha_1 + animation_parameter/tm*alpha_2; 
+        // beta_cur = (1-animation_parameter/tm)*beta_1 + animation_parameter/tm*beta_2;
+        // gamma_cur = (1-animation_parameter/tm)*gamma_1 + animation_parameter/tm*gamma_2;
 
         // Eigen::Matrix3d matrix_A = Euler2A(alpha_cur, beta_cur, gamma_cur);
 
@@ -209,6 +214,7 @@ static void draw_object(void){
 
         std::pair<Eigen::Vector3d, double> q2_axis_angle = Q2AxisAngle(q_s);    
         Eigen::Matrix3d matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
+        
         GLdouble matrixTransform[16] = 
             {matrix_A(0, 0), matrix_A(1, 0), matrix_A(2,0), 0,
              matrix_A(0, 1), matrix_A(1, 1), matrix_A(2,1), 0,
