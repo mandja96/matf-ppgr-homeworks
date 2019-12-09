@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
 
     animation_active = 0;
     animation_parameter = 0;
-    tm = 4;
+    tm = 3;
     calculate_qs();
 
     glClearColor(.05, .05, .05, 0);
@@ -118,7 +118,7 @@ static void on_display(void){
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(5, 5, 5, 
+    gluLookAt(4, 4, 4, 
               0, 0, 0, 
               0, 1, 0);
 
@@ -153,7 +153,7 @@ static void draw_start_and_end(void){
         glMultMatrixd(matrixTransform);
         glPushMatrix();
             glLineWidth(2);
-            glScalef(0.5, 0.5, 0.5);
+            glScalef(0.4, 0.4, 0.4);
             glutWireIcosahedron();
         glPopMatrix();
         draw_axis();
@@ -173,7 +173,7 @@ static void draw_start_and_end(void){
         glMultMatrixd(matrixTransform2);
         glPushMatrix();
             glLineWidth(2);
-            glScalef(0.5, 0.5, 0.5);
+            glScalef(0.4, 0.4, 0.4);
             glutWireIcosahedron();
         glPopMatrix();
         draw_axis();
@@ -218,7 +218,7 @@ static void draw_object(void){
         glMultMatrixd(matrixTransform);
         glPushMatrix();
             glLineWidth(2);
-            glScalef(0.5, 0.5, 0.5);
+            glScalef(0.4, 0.4, 0.4);
             glutWireIcosahedron();
         glPopMatrix();
         draw_axis();
@@ -247,8 +247,8 @@ static void draw_axis(void){
 static void calculate_qs(void){
     x_1 = 2; y_1 = 2; z_1 = 0;
     x_2 = -1; y_2 = 0; z_2 = 2;
-    alpha_1 = PI/6; beta_1 = 2*PI/4; gamma_1 = 3*PI/4;
-    alpha_2 = PI/2; beta_2 = PI/3; gamma_2 = 3*PI/2;
+    alpha_1 = -PI/6; beta_1 = PI; gamma_1 = 3*PI/4;
+    alpha_2 = -PI/2; beta_2 = PI/3; gamma_2 = 3*PI/2;
 
     matrix_A = Euler2A(alpha_1, beta_1, gamma_1);
     axis_angle = AxisAngle(matrix_A);
