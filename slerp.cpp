@@ -252,7 +252,7 @@ static void draw_axis(void){
 
 static void calculate_qs(void){
     x_1 = 2; y_1 = 2; z_1 = 0;
-    x_2 = -1; y_2 = 0; z_2 = 2;
+    x_2 = -2; y_2 = 0; z_2 = 2;
     alpha_1 = -PI/6; beta_1 = PI; gamma_1 = 3*PI/4;
     alpha_2 = -PI/2; beta_2 = PI/3; gamma_2 = 3*PI/2;
 
