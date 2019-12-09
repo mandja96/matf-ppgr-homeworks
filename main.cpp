@@ -236,7 +236,7 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
 Eigen::Matrix3d Rodrigez(Eigen::Vector3d p, const double& angle){
     std::cout << "Rodrigez" << std::endl << std::endl;    
     
-    p.normalize();
+    p = p.normalized();
 
     Eigen::Matrix3d px;
     px << 0, -p(2), p(1),
@@ -261,8 +261,6 @@ std::vector<double> A2Euler(Eigen::Matrix3d A){
     std::cout << "A2Euler" << std::endl << std::endl;
     std::vector<double> angles;
     double phi, theta, psi;
-
-    std::cout << "Determinanta ulazne matrice = " << A.determinant() << std::endl << std::endl;  
 
     if(A(2,0) < 1){
         if(A(2,0) > -1){
