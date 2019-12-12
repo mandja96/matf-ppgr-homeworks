@@ -19,52 +19,9 @@ int main(){
     double phi, theta, psi;
     
     /* Moj test primer */
-    // phi = 20 * PI / 180;
-    // theta = -45 * PI / 180;
-    // psi = -60 * PI / 180;
-
-    // std::cout << std::endl << "Uneti uglovi su: " << std::endl;
-    // std::cout << phi * 180 / PI << ", " << theta * 180 / PI << ", " << psi * 180 / PI << std::endl << std::endl; 
-    // std::cout << "---------------------------------------------" << std::endl;
-    // auto M = Euler2A(phi, theta, psi);
-    // auto par = AxisAngle(M);
-    // Eigen::Vector3d p = par.first;
-    // double angle = par.second;
-    // auto A = Rodrigez(p, angle);    
-    // std::vector<double> uglovi = A2Euler(A);
-    // auto q = AxisAngle2Q(p, angle);
-    // Q2AxisAngle(q);
-
-    std::cout << "--------------------------------------------" << std::endl;
-    std::cout << "--------------  PRIMER 1  ------------------" << std::endl;
-    Eigen::Matrix3d primer1Matrix;
-    primer1Matrix << 3, 1, sqrt(6), 
-                     1, 3, -sqrt(6),
-                    -sqrt(6), sqrt(6), 2;
-    primer1Matrix = primer1Matrix * 1/4;
-    std::cout << "Determinanta ulazne matrice: " << primer1Matrix.determinant() << std::endl;
-    auto res_primer11 = A2Euler(primer1Matrix);
-    auto res_primer12 = AxisAngle(primer1Matrix);
-    auto res_primer13 = AxisAngle2Q(res_primer12.first, res_primer12.second);
-
-    std::cout << "--------------------------------------------" << std::endl;
-    std::cout << "--------------  PRIMER 2  ------------------" << std::endl;
-    Eigen::Matrix3d primer2Matrix;
-    primer2Matrix << 0, 0, -1, 
-                     0, -1, 0,
-                     -1, 0, 0; 
-    std::cout << "Determinanta ulazne matrice: " << primer2Matrix.determinant() << std::endl;
-    auto res_primer21 = A2Euler(primer2Matrix);
-    auto res_primer22 = Euler2A(res_primer21[0], res_primer21[1], res_primer21[2]);
-    auto res_primer23 = AxisAngle(primer2Matrix);
-    auto res_primer24 = AxisAngle2Q(res_primer23.first, res_primer23.second);
-    
-
-    std::cout << "--------------------------------------------" << std::endl;
-    std::cout << "--------------  PRIMER 3  ------------------" << std::endl;
-    phi = atan2(sqrt(6), 2);
-    theta = asin(sqrt(6)/4);
-    psi = atan2(1, 3);
+    phi = 20 * PI / 180;
+    theta = -45 * PI / 180;
+    psi = -60 * PI / 180;
 
     std::cout << std::endl << "Uneti uglovi su: " << std::endl;
     std::cout << phi * 180 / PI << ", " << theta * 180 / PI << ", " << psi * 180 / PI << std::endl << std::endl; 
@@ -73,37 +30,91 @@ int main(){
     auto par = AxisAngle(M);
     Eigen::Vector3d p = par.first;
     double angle = par.second;
-
-    auto A = Rodrigez(p, angle);
-    
+    auto A = Rodrigez(p, angle);    
     std::vector<double> uglovi = A2Euler(A);
-
     auto q = AxisAngle2Q(p, angle);
     Q2AxisAngle(q);
 
-    std::cout << "---------------------------------------" << std::endl;
-    std::cout << "--------------  PRIMER 4  -------------" << std::endl;
-    Eigen::Vector3d p_primer4;
-    p_primer4 << 0, 3, 0;
-    auto res_primer41 = Rodrigez(p_primer4, PI/4);
-    auto res_primer42 = A2Euler(res_primer41);
-    auto res_primer43 = AxisAngle2Q(p_primer4, PI/4);
+    // std::cout << "--------------------------------------------" << std::endl;
+    // std::cout << "--------------  PRIMER 1  ------------------" << std::endl;
+    // Eigen::Matrix3d primer1Matrix;
+    // primer1Matrix << 3, 1, sqrt(6), 
+    //                  1, 3, -sqrt(6),
+    //                 -sqrt(6), sqrt(6), 2;
+    // primer1Matrix = primer1Matrix * 1/4;
+    // std::cout << "Determinanta ulazne matrice: " << primer1Matrix.determinant() << std::endl;
+    // auto res_primer11 = A2Euler(primer1Matrix);
+    // auto res_primer12 = AxisAngle(primer1Matrix);
+    // auto res_primer13 = AxisAngle2Q(res_primer12.first, res_primer12.second);
+    
 
-    std::cout << "---------------------------------------" << std::endl;
-    std::cout << "--------------  PRIMER 5  -------------" << std::endl;
-    Eigen::Matrix3d primer_ortogonalna;
-    primer_ortogonalna << 1, 0, 0, 
-                          0, 1, 0,
-                          0, 0, 1; 
-    auto tmp = primer_ortogonalna.transpose() * primer_ortogonalna;
-    std::cout << tmp << std::endl;
-    std::cout << tmp.isIdentity() << std::endl;
+    // std::cout << "--------------------------------------------" << std::endl;
+    // std::cout << "--------------  PRIMER 2  ------------------" << std::endl;
+    // Eigen::Matrix3d primer2Matrix;
+    // primer2Matrix << 0, 0, -1, 
+    //                  0, -1, 0,
+    //                  -1, 0, 0; 
+    // std::cout << "Determinanta ulazne matrice: " << primer2Matrix.determinant() << std::endl;
+    // auto res_primer21 = A2Euler(primer2Matrix);
+    // auto res_primer22 = Euler2A(res_primer21[0], res_primer21[1], res_primer21[2]);
+    // auto res_primer23 = AxisAngle(primer2Matrix);
+    // auto res_primer24 = AxisAngle2Q(res_primer23.first, res_primer23.second);
+    
 
-    std::cout << "---------------------------------------" << std::endl;
-    std::cout << "--------------  PRIMER 6  -------------" << std::endl;
-    std::cout << "atan2(-0, -1) = " << atan2(-0.0,-1.0) << std::endl;
-    std::cout << "atan2(0, -1) = " << atan2(0.0, -1.0) << std::endl;
+    // std::cout << "--------------------------------------------" << std::endl;
+    // std::cout << "--------------  PRIMER 3  ------------------" << std::endl;
+    // phi = atan2(sqrt(6), 2);
+    // theta = asin(sqrt(6)/4);
+    // psi = atan2(1, 3);
 
+    // std::cout << std::endl << "Uneti uglovi su: " << std::endl;
+    // std::cout << phi * 180 / PI << ", " << theta * 180 / PI << ", " << psi * 180 / PI << std::endl << std::endl; 
+    // std::cout << "---------------------------------------------" << std::endl;
+    // auto M = Euler2A(phi, theta, psi);
+    // auto par = AxisAngle(M);
+    // Eigen::Vector3d p = par.first;
+    // double angle = par.second;
+
+    // auto A = Rodrigez(p, angle);
+    
+    // std::vector<double> uglovi = A2Euler(A);
+
+    // auto q = AxisAngle2Q(p, angle);
+    // Q2AxisAngle(q);
+
+    
+    // std::cout << "---------------------------------------" << std::endl;
+    // std::cout << "--------------  PRIMER 4  -------------" << std::endl;
+    // Eigen::Vector3d p_primer4;
+    // p_primer4 << 0, 3, 0;
+    // auto res_primer41 = Rodrigez(p_primer4, PI/4);
+    // auto res_primer42 = A2Euler(res_primer41);
+    // auto res_primer43 = AxisAngle2Q(p_primer4, PI/4);
+
+    
+    // std::cout << "---------------------------------------" << std::endl;
+    // std::cout << "--------------  PRIMER 5  -------------" << std::endl;
+    // Eigen::Matrix3d primer_ortogonalna;
+    // primer_ortogonalna << 1, 0, 0, 
+    //                       0, 1, 0,
+    //                       0, 0, 1; 
+    // auto tmp = primer_ortogonalna.transpose() * primer_ortogonalna;
+    // std::cout << tmp << std::endl;
+    // std::cout << tmp.isIdentity() << std::endl;
+
+    
+    // std::cout << "---------------------------------------" << std::endl;
+    // std::cout << "--------------  PRIMER 6  -------------" << std::endl;
+    // std::cout << "atan2(-0, -1) = " << atan2(-0.0,-1.0) << std::endl;
+    // std::cout << "atan2(0, -1) = " << atan2(0.0, -1.0) << std::endl;
+
+    
+    // std::cout << "---------------------------------------" << std::endl;
+    // std::cout << "--------------  PRIMER 7  -------------" << std::endl;
+    // Eigen::Vector4d quat;
+    // quat << 0, sin(PI/8), 0, cos(PI/8);
+    // Q2AxisAngle(quat);
+    
     return 0;
 }
 
@@ -138,8 +149,8 @@ Eigen::Matrix3d Euler2A(const double& phi,
          cos(theta)*sin(phi),
          cos(theta)*cos(phi);
 
-    std::cout << "Rezultat Euler2A: " << std::endl;
-    std::cout << M << std::endl << std::endl;
+    // std::cout << "Rezultat Euler2A: " << std::endl;
+    // std::cout << M << std::endl << std::endl;
     std::cout << "Matrica dobijena mnozenjem Rz*Ry*Rx:" << std::endl;
     std::cout << Rz*Ry*Rx << std::endl << std::endl;
 
@@ -266,7 +277,7 @@ Eigen::Matrix3d Rodrigez(Eigen::Vector3d p, const double& angle){
     R = p*p.transpose() + cos(angle)*(E - p*p.transpose()) + sin(angle)*px;
 
     std::cout << "Matrica rotacije dobijena Rodrigezovom formulom: " << std::endl;
-    std::cout << R << std::endl;
+    std::cout << R << std::endl << std::endl;
     std::cout << "---------------------------------------------" << std::endl;
     return R;
 }
