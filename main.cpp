@@ -89,6 +89,21 @@ int main(){
     auto res_primer42 = A2Euler(res_primer41);
     auto res_primer43 = AxisAngle2Q(p_primer4, PI/4);
 
+    std::cout << "---------------------------------------" << std::endl;
+    std::cout << "--------------  PRIMER 5  -------------" << std::endl;
+    Eigen::Matrix3d primer_ortogonalna;
+    primer_ortogonalna << 1, 0, 0, 
+                          0, 1, 0,
+                          0, 0, 1; 
+    auto tmp = primer_ortogonalna.transpose() * primer_ortogonalna;
+    std::cout << tmp << std::endl;
+    std::cout << tmp.isIdentity() << std::endl;
+
+    std::cout << "---------------------------------------" << std::endl;
+    std::cout << "--------------  PRIMER 6  -------------" << std::endl;
+    std::cout << "atan2(-0, -1) = " << atan2(-0.0,-1.0) << std::endl;
+    std::cout << "atan2(0, -1) = " << atan2(0.0, -1.0) << std::endl;
+
     return 0;
 }
 
@@ -140,7 +155,7 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
     p << 0, 0, 0;
     double angle = 0.0;
     Eigen::Vector3d u, u_p;
-    int determinant = A.determinant();
+    float determinant = A.determinant();
 
     // A.T * A = E znači da kolone matrice A
     // predstavljaju ortonormirani reper prostora koji
@@ -151,9 +166,9 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
         //std::cout << tmp << std::endl <<std::endl;
     }
 
-    if( tmp.isIdentity() && determinant == 1 ){
+    if( tmp.isIdentity() && determinant == 1.0 ){
         // matrica A JESTE matrica kretanja
-
+        std::cout << "Matrica jeste matrica kretanja!" << std::endl;
         Eigen::Vector3d firstRow = A.row(0);
         firstRow(0) = firstRow(0) - 1;
         Eigen::Vector3d secondRow = A.row(1);
