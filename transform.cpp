@@ -38,10 +38,10 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
     p << 0, 0, 0;
     double angle = 0.0;
     Eigen::Vector3d u, u_p;
-    int determinant = A.determinant();
+    float determinant = A.determinant();
 
     auto tmp = A.transpose() * A;
-    if( tmp.isIdentity() && determinant == 1 ){
+    if( tmp.isIdentity() && determinant == 1.0 ){
 
         Eigen::Vector3d firstRow = A.row(0);
         firstRow(0) = firstRow(0) - 1;

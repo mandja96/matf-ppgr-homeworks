@@ -1,9 +1,12 @@
 #define GL_SILENCE_DEPRECATION
-#define TIMER_INTERVAL 50
+#define TIMER_INTERVAL 20
 #define TIMER_ID 0
 
 #include "transform.hpp"
 #include <GLUT/glut.h>
+
+// #define LERP 
+#define SLERP
 
 static float animation_parameter;
 static int animation_active;
@@ -149,7 +152,7 @@ static void on_display(void){
 
 static void draw_start_and_end(void){
     glPushMatrix();
-        glColor3f(.6, .6, .6);
+        glColor3f(.4, .4, .4);
         std::pair<Eigen::Vector3d, double> q2_axis_angle = Q2AxisAngle(q_1);    
         Eigen::Matrix3d matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
         GLdouble matrixTransform[16] = 
@@ -169,7 +172,7 @@ static void draw_start_and_end(void){
     glPopMatrix();
 
     glPushMatrix();
-        glColor3f(.6, .6, .6);
+        glColor3f(.4, .4, .4);
         q2_axis_angle = Q2AxisAngle(q_2);    
         matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
         GLdouble matrixTransform2[16] = 
@@ -191,30 +194,34 @@ static void draw_start_and_end(void){
 
 static void draw_object(void){
     glPushMatrix();
-        glColor3f(.9, .9, .9);
+        glColor3f(1, 1, 1);
 
+        #ifdef LERP  
+            alpha_cur = (1-animation_parameter/tm)*alpha_1 + animation_parameter/tm*alpha_2; 
+            beta_cur = (1-animation_parameter/tm)*beta_1 + animation_parameter/tm*beta_2;
+            gamma_cur = (1-animation_parameter/tm)*gamma_1 + animation_parameter/tm*gamma_2;
 
-        // alpha_cur = (1-animation_parameter/tm)*alpha_1 + animation_parameter/tm*alpha_2; 
-        // beta_cur = (1-animation_parameter/tm)*beta_1 + animation_parameter/tm*beta_2;
-        // gamma_cur = (1-animation_parameter/tm)*gamma_1 + animation_parameter/tm*gamma_2;
+            Eigen::Matrix3d matrix_A = Euler2A(alpha_cur, beta_cur, gamma_cur);
+        #endif
 
-        // Eigen::Matrix3d matrix_A = Euler2A(alpha_cur, beta_cur, gamma_cur);
+        #ifdef SLERP
+            if(flag_q1_close_to_q2){
+                q_s = q_1;
+                flag_q1_close_to_q2 = false;
+            }
+            else {
+                q_s = slerp(q_1, q_2, tm, animation_parameter);
+            }
+
+            std::pair<Eigen::Vector3d, double> q2_axis_angle = Q2AxisAngle(q_s);    
+            Eigen::Matrix3d matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
+        #endif
 
         x_cur = (1-animation_parameter/tm)*x_1 + animation_parameter/tm*x_2;
         y_cur = (1-animation_parameter/tm)*y_1 + animation_parameter/tm*y_2;
         z_cur = (1-animation_parameter/tm)*z_1 + animation_parameter/tm*z_2;
 
-        if(flag_q1_close_to_q2){
-            q_s = q_1;
-            flag_q1_close_to_q2 = false;
-        }
-        else {
-            q_s = slerp(q_1, q_2, tm, animation_parameter);
-        }
-
-        std::pair<Eigen::Vector3d, double> q2_axis_angle = Q2AxisAngle(q_s);    
-        Eigen::Matrix3d matrix_A = Rodrigez(q2_axis_angle.first, q2_axis_angle.second);
-        
+                
         GLdouble matrixTransform[16] = 
             {matrix_A(0, 0), matrix_A(1, 0), matrix_A(2,0), 0,
              matrix_A(0, 1), matrix_A(1, 1), matrix_A(2,1), 0,
@@ -275,6 +282,7 @@ static void calculate_qs(void){
 
     if(cos_angle > 0.95){
         // vrati q1 kao qs ili radi lerp
+        // ja vracam q1, ne radim lerp
         flag_q1_close_to_q2 = true;
     }
 
