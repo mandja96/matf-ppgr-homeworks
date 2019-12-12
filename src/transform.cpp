@@ -89,11 +89,7 @@ std::pair<Eigen::Vector3d, double> AxisAngle(Eigen::Matrix3d& A){
         u_p = u_p.normalized();
         angle = acos(u.dot(u_p));
     }
-
-    // std::cout << "Vektor p: " << std::endl << p << std::endl << std::endl;
-    // std::cout << "Ugao φ u radijanima: " << angle << std::endl;
-    // std::cout << "Ugao φ u stepenima: " << angle * 180 / PI << std::endl << std::endl;
-
+    
     Eigen::Matrix3f mixedProductMatrix;
     mixedProductMatrix << u(0), u(1), u(2), 
                           u_p(0), u_p(1), u_p(2),
@@ -148,22 +144,12 @@ std::vector<double> A2Euler(Eigen::Matrix3d A){
         phi = 0;
     }
 
-    // std::cout << "φ = " << phi << " [rad]" << std::endl;
-    // std::cout << "θ = " << theta << " [rad]" << std::endl;
-    // std::cout << "ψ = " << psi << " [rad]" << std::endl << std::endl;
-    // std::cout << "φ = " << phi * 180 / PI << " [stepeni]" << std::endl;
-    // std::cout << "θ = " << theta * 180 / PI << " [stepeni]" << std::endl;
-    // std::cout << "ψ = " << psi * 180 / PI << " [stepeni]" << std::endl << std::endl;
-
-    // std::cout << "---------------------------------------------" << std::endl;
     angles.push_back(phi);
     angles.push_back(theta);
     angles.push_back(psi);
     return angles;
 } 
 
-// vraca jednicni kvaternion q = (x,y,z,w) tako da
-// Cq = Rp(φ). Vektor p je jedinicni.
 Eigen::Vector4d AxisAngle2Q(Eigen::Vector3d p, double phi){
     Eigen::Vector4d q;
     double w;
