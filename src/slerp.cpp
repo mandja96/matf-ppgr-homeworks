@@ -76,13 +76,6 @@ static void on_keyboard(unsigned char key, int x, int y){
                 glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
             }
             break;
-
-        case 'n':
-        case 'N':
-            if(!animation_active){
-                animation_active = 1;
-                glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
-            }
         case 's':
         case 'S':
             animation_active = 0;
