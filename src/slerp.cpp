@@ -94,15 +94,16 @@ static void on_timer(int value)
     if (value != TIMER_ID)
         return;
 
-    if(animation_parameter >= tm-0.08){    
-        animation_active = 0;
-        glutPostRedisplay();
-    }
-
-    animation_parameter += 0.05;
-    glutPostRedisplay();
-
     if (animation_active) {
+        if(animation_parameter >= tm-0.08){    
+            animation_active = 0;
+            glutPostRedisplay();
+        }
+
+        animation_parameter += 0.05;
+        glutPostRedisplay();
+
+        
         glutTimerFunc(TIMER_INTERVAL, on_timer, TIMER_ID);
     }
 }
